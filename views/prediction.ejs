@@ -1,0 +1,20 @@
+<%- include("partials/header") %>
+
+<h2>📈 Next Month Expense Prediction</h2>
+
+<div style="margin-top:20px">
+  <p><b>Predicted Expense:</b> ₹<%= prediction %></p>
+  <p>
+    <% if (growth > 0) { %>
+      Expected increase of <%= growth %>% 🔺
+    <% } else if (growth < 0) { %>
+      Expected decrease of <%= Math.abs(growth) %>% 🔻
+    <% } else { %>
+      No significant change.
+    <% } %>
+  </p>
+</div>
+
+<a href="/analytics">← Back to Analytics</a>
+
+<%- include("partials/footer") %>

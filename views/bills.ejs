@@ -1,0 +1,33 @@
+<%- include("partials/header") %>
+<h2>📅 Bill Reminders</h2>
+
+<a href="/bills/add" class="btn btn-primary mb-3">+ Add Bill</a>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Name</th>
+    <th>Amount</th>
+    <th>Due Date</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+  <% bills.forEach(bill => { %>
+  <tr>
+    <td><%= bill.name %></td>
+    <td>₹<%= bill.amount %></td>
+    <td><%= new Date(bill.dueDate).toDateString() %></td>
+    <td><%= bill.status %></td>
+    <td>
+      <% if(bill.status === "pending"){ %>
+        <form action="/bills/<%= bill._id %>/markPaid" method="POST" style="display:inline">
+          <button>Mark Paid</button>
+        </form>
+      <% } %>
+      <form action="/bills/<%= bill._id %>/delete" method="POST" style="display:inline">
+        <button>Delete</button>
+      </form>
+    </td>
+  </tr>
+  <% }) %>
+</table>
+<%- include("partials/footer") %>

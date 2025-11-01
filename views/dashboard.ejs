@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard | FinTrack</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f7f9fb; margin: 20px; }
+    h1, h2 { color: #333; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 10px; text-align: center; }
+    th { background-color: #f0f0f0; }
+    a { text-decoration: none; color: #007bff; }
+    button { background-color: #007bff; color: white; border: none; padding: 6px 10px; cursor: pointer; border-radius: 4px; }
+    button:hover { background-color: #0056b3; }
+    .section { margin-bottom: 30px; }
+  </style>
+</head>
+<body>
+  <h1>Welcome, <%= user.username %> 👋</h1>
+
+  <nav>
+    <a href="/add">+ Add Transaction</a> | 
+    <a href="/loans">Loans</a> |
+    <a href="/savings">Savings</a> |
+    <a href="/analytics">Analytics</a> |
+    <a href="/bills">Bills</a> |
+    <a href="/logout">Logout</a>
+  </nav>
+
+  <hr>
+
+  <!-- 🧾 Upcoming Bills Section -->
+  <div class="section">
+    <h2>📅 Upcoming Bills</h2>
+    <% if (upcomingBills && upcomingBills.length > 0) { %>
+      <table>
+        <tr>
+          <th>Bill Name</th>
+          <th>Amount (₹)</th>
+          <th>Due Date</th>
+          <th>Action</th>
+        </tr>
+        <% upcomingBills.forEach(bill => { %>
+          <tr>
+            <td><%= bill.name %></td>
+            <td>₹<%= bill.amount %></td>
+            <td><%= new Date(bill.dueDate).toDateString() %></td>
+            <td>
+              <form action="/bills/<%= bill._id %>/markPaid" method="POST" style="display:inline;">
+                <button>Mark Paid</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </table>
+      <a href="/bills">View All Bills →</a>
+    <% } else { %>
+      <p>No upcoming bills 🎉</p>
+    <% } %>
+  </div>
+
+  <hr>
+
+  <!-- 💸 Loan Summary -->
+  <div class="section">
+    <h2>💸 Loan Summary</h2>
+    <% if (loans && loans.length > 0) { %>
+      <table>
+        <tr>
+          <th>Person</th>
+          <th>Amount (₹)</th>
+          <th>Interest (%)</th>
+          <th>Due Date</th>
+          <th>Status</th>
+        </tr>
+        <% loans.forEach(loan => { %>
+          <tr>
+            <td><%= loan.person %></td>
+            <td><%= loan.amount %></td>
+            <td><%= loan.interestRate %></td>
+            <td><%= loan.dueDate.toDateString() %></td>
+            <td><%= loan.status %></td>
+          </tr>
+        <% }) %>
+      </table>
+      <p><strong>Total Pending Loans:</strong> ₹<%= loans.filter(l => l.status === 'pending').reduce((sum, l) => sum + l.amount, 0) %></p>
+      <p><strong>Total Paid Loans:</strong> ₹<%= loans.filter(l => l.status === 'paid').reduce((sum, l) => sum + l.amount, 0) %></p>
+    <% } else { %>
+      <p>No loans yet. <a href="/loans/add">Add Loan</a></p>
+    <% } %>
+  </div>
+
+  <hr>
+
+  <!-- 💰 Transactions -->
+  <div class="section">
+    <h2>💰 Your Transactions</h2>
+    <% if (transactions.length === 0) { %>
+      <p>No transactions yet. Start adding!</p>
+    <% } else { %>
+      <table>
+        <tr>
+          <th>Type</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th>Note</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+        <% transactions.forEach(txn => { %>
+          <tr>
+            <td><%= txn.type %></td>
+            <td><%= txn.category %></td>
+            <td>₹<%= txn.amount %></td>
+            <td><%= txn.note || '-' %></td>
+            <td><%= txn.date.toDateString() %></td>
+            <td>
+              <form action="/delete/<%= txn._id %>" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </table>
+    <% } %>
+  </div>
+</body>
+</html>

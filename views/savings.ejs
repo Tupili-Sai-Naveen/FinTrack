@@ -1,0 +1,25 @@
+<%- include("partials/header") %>
+<h2>💰 My Savings Goals</h2>
+
+<a href="/savings/calculator" class="btn btn-primary">+ New Calculation</a>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Principal</th>
+    <th>Rate</th>
+    <th>Time (yrs)</th>
+    <th>Type</th>
+    <th>Result</th>
+  </tr>
+  <% goals.forEach(goal => { %>
+  <tr>
+    <td>₹<%= goal.principal %></td>
+    <td><%= goal.rate %>%</td>
+    <td><%= goal.time %></td>
+    <td><%= goal.type %></td>
+    <td>₹<%= goal.result.toFixed(2) %></td>
+  </tr>
+  <% }) %>
+</table>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,36 @@
+<%- include("partials/header") %>
+
+<h2>💸 Loan Tracker</h2>
+<a href="/loans/add" class="btn btn-primary">+ Add Loan</a>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Person</th>
+    <th>Amount</th>
+    <th>Interest (%)</th>
+    <th>Due Date</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+  <% loans.forEach(loan => { %>
+  <tr>
+    <td><%= loan.person %></td>
+    <td>₹<%= loan.amount %></td>
+    <td><%= loan.interestRate %></td>
+    <td><%= loan.dueDate.toDateString() %></td>
+    <td><%= loan.status %></td>
+    <td>
+      <% if(loan.status === "pending"){ %>
+        <form action="/loans/<%= loan._id %>/markPaid" method="POST" style="display:inline">
+          <button>Mark Paid</button>
+        </form>
+      <% } %>
+      <form action="/loans/<%= loan._id %>/delete" method="POST" style="display:inline">
+        <button>Delete</button>
+      </form>
+    </td>
+  </tr>
+  <% }) %>
+</table>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,18 @@
+<%- include("partials/header") %>
+
+<h2>➕ Add New Bill</h2>
+
+<form action="/bills/add" method="POST">
+  <label>Bill Name:</label>
+  <input type="text" name="name" required><br>
+
+  <label>Amount (₹):</label>
+  <input type="number" name="amount" required><br>
+
+  <label>Due Date:</label>
+  <input type="date" name="dueDate" required><br>
+
+  <button type="submit">Add Bill</button>
+</form>
+
+<%- include("partials/footer") %>

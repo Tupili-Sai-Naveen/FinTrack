@@ -1,0 +1,23 @@
+<%- include("partials/header") %>
+
+<h2>Add New Loan</h2>
+<form action="/loans/add" method="POST">
+  <label>Person Name:</label>
+  <input type="text" name="person" required><br>
+
+  <label>Amount:</label>
+  <input type="number" name="amount" required><br>
+
+  <label>Interest Rate (%):</label>
+  <input type="number" name="interestRate" required><br>
+
+  <label>Start Date:</label>
+  <input type="date" name="startDate" required><br>
+
+  <label>Due Date:</label>
+  <input type="date" name="dueDate" required><br>
+
+  <button type="submit">Add Loan</button>
+</form>
+
+<%- include("partials/footer") %>

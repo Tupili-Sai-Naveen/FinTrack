@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Transaction | FinTrack</title>
+</head>
+<body>
+  <h2>Add Transaction</h2>
+  <form action="/add" method="POST">
+    <label>Type:</label>
+    <select name="type" required>
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select><br>
+
+    <label>Category:</label>
+    <input type="text" name="category" placeholder="e.g. Food, Salary" required /><br>
+
+    <label>Amount:</label>
+    <input type="number" name="amount" placeholder="Enter amount" required /><br>
+
+    <label>Note (optional):</label>
+    <input type="text" name="note" /><br>
+
+    <button type="submit">Add</button>
+  </form>
+  <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>

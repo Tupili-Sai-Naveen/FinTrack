@@ -1,0 +1,23 @@
+<%- include("partials/header") %>
+<h2>💰 Savings Calculator</h2>
+
+<form action="/savings/calculate" method="POST">
+  <label>Principal (₹):</label>
+  <input type="number" name="principal" required><br>
+
+  <label>Rate (% per year):</label>
+  <input type="number" name="rate" required><br>
+
+  <label>Time (years):</label>
+  <input type="number" name="time" required><br>
+
+  <label>Type:</label>
+  <select name="type">
+    <option value="simple">Simple Interest</option>
+    <option value="compound">Compound Interest</option>
+  </select><br>
+
+  <button type="submit">Calculate</button>
+</form>
+
+<%- include("partials/footer") %>

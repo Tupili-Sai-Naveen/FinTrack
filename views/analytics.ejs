@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Analytics | FinTrack</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body class="bg-light p-4">
+  <div class="container">
+    <h1 class="mb-3">📊 Financial Analytics</h1>
+    <a href="/dashboard" class="btn btn-secondary mb-4">← Back</a>
+
+    <!-- 🔍 Month Filter -->
+    <form action="/analytics" method="GET" class="d-flex align-items-center gap-2 mb-3">
+      <select name="month" class="form-select w-auto">
+        <% monthsAvailable.forEach(m => { %>
+          <option value="<%= m.month %>" <% if(m.month===selectedMonth && m.year===selectedYear){%>selected<%}%> >
+            <%= m.label %>
+          </option>
+        <% }) %>
+      </select>
+
+      <select name="year" class="form-select w-auto">
+        <% [...new Set(monthsAvailable.map(m=>m.year))].forEach(y => { %>
+          <option value="<%= y %>" <% if(y===selectedYear){%>selected<%}%>><%= y %></option>
+        <% }) %>
+      </select>
+
+      <button class="btn btn-primary">View</button>
+    </form>
+
+    <!-- 🔮 Prediction Insight -->
+    <div class="alert alert-info">
+      <h5>🔮 Next-Month Expense Prediction</h5>
+      <p>
+        <b>Predicted Expense:</b> ₹<%= prediction %><br>
+        <% if (growth > 0) { %>
+          Expected increase of <b><%= growth %>%</b> 🔺
+        <% } else if (growth < 0) { %>
+          Expected decrease of <b><%= Math.abs(growth) %>%</b> 🔻
+        <% } else { %>
+          No major change expected.
+        <% } %>
+      </p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row text-center mb-4">
+      <div class="col-md-4">
+        <div class="card border-success shadow-sm">
+          <div class="card-body">
+            <h5>Total Income</h5>
+            <h4 class="text-success">₹<%= totalIncome %></h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-danger shadow-sm">
+          <div class="card-body">
+            <h5>Total Expense</h5>
+            <h4 class="text-danger">₹<%= totalExpense %></h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-primary shadow-sm">
+          <div class="card-body">
+            <h5>Balance</h5>
+            <h4 class="text-primary">₹<%= balance %></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <canvas id="summaryChart" height="200"></canvas>
+      </div>
+      <div class="col-md-6 mb-4">
+        <canvas id="categoryChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const transactions = <%- JSON.stringify(transactions) %>;
+    const income = transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const expense = transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+
+    const ctx1 = document.getElementById('summaryChart').getContext('2d');
+    new Chart(ctx1,{
+      type:'bar',
+      data:{
+        labels:['Income','Expense'],
+        datasets:[{
+          data:[income,expense],
+          backgroundColor:['#4caf50','#f44336']
+        }]
+      },
+      options:{plugins:{title:{display:true,text:'Income vs Expense'}}}
+    });
+
+    const categoryTotals = {};
+    transactions.filter(t=>t.type==='expense').forEach(t=>{
+      categoryTotals[t.category]=(categoryTotals[t.category]||0)+t.amount;
+    });
+
+    const ctx2=document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctx2,{
+      type:'pie',
+      data:{
+        labels:Object.keys(categoryTotals),
+        datasets:[{
+          data:Object.values(categoryTotals),
+          backgroundColor:['#e91e63','#9c27b0','#2196f3','#ffc107','#009688','#ff9800']
+        }]
+      },
+      options:{plugins:{title:{display:true,text:'Expense by Category'}}}
+    });
+  </script>
+</body>
+</html>
