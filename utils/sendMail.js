@@ -1,3 +1,4 @@
+// utils/sendMail.js
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,7 +11,7 @@ async function sendMail(to, subject, html) {
       html,
     });
 
-    console.log("✅ Mail sent:", data.id || to);
+    console.log("✅ Mail sent to:", to);
   } catch (err) {
     console.error("❌ Error sending mail:", err.message);
   }

@@ -1,7 +1,8 @@
-const nodemailer = require("nodemailer");
+// utils/monthlyReport.js
 const Transaction = require("../models/Transaction");
 const User = require("../models/User");
 const { spawn } = require("child_process");
+const sendMail = require("./sendMail");
 
 async function sendMonthlyReport() {
   try {
@@ -9,25 +10,18 @@ async function sendMonthlyReport() {
 
     for (const user of users) {
       const transactions = await Transaction.find({ user: user._id });
-
       if (!transactions.length) continue;
 
-      // -----------------------------
-      // 1️⃣ Calculate income & expenses
-      // -----------------------------
+      // 🧮 Income & Expense calculation
       const totalIncome = transactions
         .filter((t) => t.type === "income")
-        .reduce((s, t) => s + t.amount, 0);
-
+        .reduce((sum, t) => sum + t.amount, 0);
       const totalExpense = transactions
         .filter((t) => t.type === "expense")
-        .reduce((s, t) => s + t.amount, 0);
-
+        .reduce((sum, t) => sum + t.amount, 0);
       const balance = totalIncome - totalExpense;
 
-      // -----------------------------
-      // 2️⃣ Find top 3 spending categories
-      // -----------------------------
+      // 🏷️ Top categories
       const categoryTotals = {};
       transactions
         .filter((t) => t.type === "expense")
@@ -42,9 +36,7 @@ async function sendMonthlyReport() {
         .map(([cat, amt]) => `${cat}: ₹${amt}`)
         .join("<br>") || "—";
 
-      // -----------------------------
-      // 3️⃣ Run Python predictor (Pandas)
-      // -----------------------------
+      // 🧠 Run Python predictor
       const pythonOutput = await new Promise((resolve) => {
         let result = "";
         let errorData = "";
@@ -74,18 +66,16 @@ async function sendMonthlyReport() {
 
       const { prediction, growth } = pythonOutput;
 
-      // -----------------------------
-      // 4️⃣ Compose smart email
-      // -----------------------------
+      // 📧 Create Email HTML
       const html = `
-        <h2> FinTrack Monthly Report</h2>
-        <p>Hi <b>${user.username}</b>, here’s your financial summary for this month:</p>
+        <h2>📊 FinTrack Monthly Report</h2>
+        <p>Hi <b>${user.username}</b>, here’s your monthly summary:</p>
         <ul>
           <li><b>Total Income:</b> ₹${totalIncome}</li>
           <li><b>Total Expense:</b> ₹${totalExpense}</li>
           <li><b>Net Balance:</b> ₹${balance}</li>
         </ul>
-        <p><b>Top 3 Expense Categories:</b><br>${topCategories}</p>
+        <p><b>Top Expense Categories:</b><br>${topCategories}</p>
         <hr>
         <h3>📈 Next Month Prediction</h3>
         <p>Predicted Expense: ₹${prediction}</p>
@@ -99,31 +89,20 @@ async function sendMonthlyReport() {
           }
         </p>
         <hr>
-        <p style="color:green"><b>Keep tracking and saving smarter with FinTrack 💰</b></p>
+        <p style="color:green"><b>Keep saving smart with FinTrack 💰</b></p>
       `;
 
-      // -----------------------------
-      // 5️⃣ Setup transporter
-      // -----------------------------
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
-
-      await transporter.sendMail({
-        from: `"FinTrack Reports" <${process.env.EMAIL_USER}>`,
-        to: user.email,
-        subject: "📊 Your Monthly FinTrack Summary & Next-Month Prediction",
-        html,
-      });
+      // 📤 Send via Resend
+      await sendMail(
+        user.email,
+        "📊 FinTrack Monthly Summary & Prediction",
+        html
+      );
 
       console.log(`✅ Report sent to ${user.email}`);
     }
 
-    console.log("🎉 All reports sent successfully!");
+    console.log("🎉 All monthly reports sent!");
   } catch (err) {
     console.error("❌ Error sending reports:", err);
   }
