@@ -1,20 +1,29 @@
 // utils/sendMail.js
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require("nodemailer");
 
 async function sendMail(to, subject, html) {
   try {
-    const data = await resend.emails.send({
-      from: "FinTrack <onboarding@resend.dev>",
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"FinTrack Reports" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
-    });
+    };
 
-    console.log("✅ Mail sent to:", to);
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Mail sent to: ${to}`);
   } catch (err) {
     console.error("❌ Error sending mail:", err.message);
   }
 }
 
 module.exports = sendMail;
+
