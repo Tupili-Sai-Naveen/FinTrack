@@ -1,0 +1,10 @@
+# railway.toml
+[build]
+builder = "NIXPACKS"
+
+[start]
+cmd = "npm start"
+
+# Force detection of Node
+[phases.setup]
+nixPkgs = ["nodejs", "npm"]
